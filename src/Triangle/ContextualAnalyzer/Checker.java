@@ -262,7 +262,7 @@ public final class Checker implements Visitor {
               new int[]{Integer.parseInt(lMin), Integer.parseInt(lMax)}:
               new int[]{lMin.charAt(1),  lMax.charAt(1)};
 
-      if ((limits[0] < limits[1]))
+      if ((limits[1] < limits[0]))
         limits = new int[]{limits[1], limits[0]};
 
       currentRange = IntStream.rangeClosed(limits[0], limits[1]).boxed().collect(Collectors.toSet());
@@ -318,7 +318,6 @@ public final class Checker implements Visitor {
   public Object visitCaseLiterals(CaseLiterals ast, Object o) {
     Object T = ast.R.visit(this, null);
     TypeDenoter chooseEType = (TypeDenoter) o;
-    boolean ignoreChooseType = chooseEType == StdEnvironment.anyType;
     List<Terminal[]> checkedTerminals = new ArrayList<>();
 
     Terminal[] rawTerminals = ast.R instanceof CaseRange ? (Terminal[]) T : new Terminal[] {(Terminal) T};
@@ -329,7 +328,7 @@ public final class Checker implements Visitor {
       reporter.reportError("Literals mismatch the allowed values.", "", ast.position);
      else if (!eType.equals(chooseEType))
        reporter.reportError("Literals mismatch the type of the choose expression.", "", ast.position);
-     else if (!ignoreChooseType)
+     else
       checkedTerminals.add(rawTerminals);
     }
 
@@ -362,7 +361,7 @@ public final class Checker implements Visitor {
     if (! (eType1.equals(eType2)) )
       reporter.reportError("Incompatible types found in the literals %.", T1.spelling + ".." + T2.spelling, ast.position);
     else
-      terminals = new Terminal[]{T2, T1};
+      terminals = new Terminal[]{T1, T2};
 
     return terminals;
   }
