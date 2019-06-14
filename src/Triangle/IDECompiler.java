@@ -6,6 +6,7 @@
 package Triangle;
 
 import Triangle.AbstractSyntaxTrees.Program;
+import Triangle.CodeGenerator.Encoder;
 import Triangle.ContextualAnalyzer.Checker;
 import Triangle.SyntacticAnalyzer.Parser;
 import Triangle.SyntacticAnalyzer.Scanner;
@@ -18,7 +19,7 @@ import Triangle.SyntacticAnalyzer.SourceFile;
  * to get to the ASTs in order to draw them in the IDE without modifying the
  * original Triangle code.
  *
- * @author Luis Leopoldo Pérez <luiperpe@ns.isi.ulatina.ac.cr>
+ * @author Luis Leopoldo Pï¿½rez <luiperpe@ns.isi.ulatina.ac.cr>
  */
 public class IDECompiler {
 
@@ -55,12 +56,13 @@ public class IDECompiler {
             Checker checker = new Checker(report);
             checker.check(rootAST);
             if (report.numErrors == 0) {
-                /*System.out.println("Code Generation ...");
+                System.out.println("Code Generation ...");
                 Encoder encoder = new Encoder(report);
-                encoder.encodeRun(rootAST, false);*/
+                encoder.encodeRun(rootAST, false);
                 
                 if (report.numErrors == 0) {
-                    //encoder.saveObjectProgram(sourceName.replace(".tri", ".tam"));
+                    encoder.saveObjectProgram(sourceName.replace(".tri", ".tam"));
+                    System.out.println("No encode errors");
                     success = true;
                 }
             }
