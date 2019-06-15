@@ -380,7 +380,7 @@ public class Disassembler {
 // DISASSEMBLE
 
   public static void main(String[] args) {
-    System.out.println ("********** TAM Disassembler (Sun Version 2.1) **********");
+    System.out.println ("********** TAM Disassembler (Moon Version 2.3) **********");
 
     if (args.length == 1)
       objectName = args[0];
