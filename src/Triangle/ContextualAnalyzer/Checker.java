@@ -619,6 +619,7 @@ public final class Checker implements Visitor {
   public Object visitParDeclaration(ParDeclaration ast, Object o) {
     //Pre par snapshot
     IdentificationTable snapShot = new IdentificationTable(idTable);
+    IdEntry mergePoint = snapShot.getLatest();
 
     ast.D1.visit(this, null);
     //Creates new snapshot with the first par declaration
@@ -629,7 +630,7 @@ public final class Checker implements Visitor {
 
     //Merge the two branches together
 
-    List<IdEntry> toMerge = idTable.getEntriesUntil(snapShotPar.getLatest(), idTable.getLatest().id);
+    List<IdEntry> toMerge = idTable.getEntriesUntil(snapShotPar.getLatest(), mergePoint.id);
     for (IdEntry entry : toMerge) {
       idTable.enter(entry.id, entry.attr);
 
