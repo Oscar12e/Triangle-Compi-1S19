@@ -60,7 +60,7 @@ public final class Encoder implements Visitor {
   }
 
   public Object visitEmptyCommand(EmptyCommand ast, Object o) {
-    return null;
+    return new Integer(0);
   }
 
   public Object visitIfCommand(IfCommand ast, Object o) {
@@ -396,7 +396,7 @@ public final class Encoder implements Visitor {
     Frame frame = (Frame) o;
     int extraSize1, extraSize2;
     extraSize1 = ((Integer) ast.D1.visit(this, frame)).intValue();
-    Frame frame1 = new Frame (frame, extraSize1);
+    Frame frame1 = new Frame(frame, extraSize1);
     extraSize2 = ((Integer) ast.D2.visit(this, frame1)).intValue();
     return new Integer(extraSize1 + extraSize2);
   }
@@ -404,11 +404,15 @@ public final class Encoder implements Visitor {
 
   @Override
   public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
+    //there is a problem with memory at use recursivity more than 3 levels,
+    //the snapshot of the nexInstrAddr was an advice given by Ricardo Shum
+    //and Marvin Castro and this solve our problem.
     Frame frame = (Frame) o;
+    int instrAddrSnapshot = nextInstrAddr;
     int extraSize1 = (Integer) ast.P.visit(this, frame);
-    Frame frame1 = new Frame(frame, extraSize1);
-    int extraSize2 = (Integer) ast.P.visitTwo(this, frame1);
-    return new Integer(extraSize2);
+    nextInstrAddr = instrAddrSnapshot;
+    extraSize1 = (Integer) ast.P.visitTwo(this, frame);
+    return new Integer(extraSize1);
   }
 
   @Override
@@ -810,6 +814,9 @@ public final class Encoder implements Visitor {
       int displacement = ((EqualityRoutine) ast.decl.entity).displacement;
       emit(Machine.LOADLop, 0, 0, frame.size / 2);
       emit(Machine.CALLop, Machine.SBr, Machine.PBr, displacement);
+    }else {
+      //Part of the advice given by Ricardo and Marvin.
+      emit(Machine.LOADLop, 0, 0, -50); // Ask for space for (recursive) future operations
     }
     return null;
   }
