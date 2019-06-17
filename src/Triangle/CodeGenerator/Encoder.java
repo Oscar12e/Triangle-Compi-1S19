@@ -382,18 +382,35 @@ public final class Encoder implements Visitor {
 
   @Override
   public Object visitPrivateDeclaration(PrivateDeclaration ast, Object o) {
-    return null;
+    Frame frame = (Frame) o;
+    int extraSize1, extraSize2;
+
+    extraSize1 = ((Integer) ast.D1.visit(this, frame)).intValue();
+    Frame frame1 = new Frame (frame, extraSize1);
+    extraSize2 = ((Integer) ast.D2.visit(this, frame1)).intValue();
+    return new Integer(extraSize1 + extraSize2);
   }
 
   @Override
   public Object visitParDeclaration(ParDeclaration ast, Object o) {
-    return null;
+    Frame frame = (Frame) o;
+    int extraSize1, extraSize2;
+
+    System.out.println(ast.D1.getClass());
+    extraSize1 = ((Integer) ast.D1.visit(this, frame)).intValue();
+    Frame frame1 = new Frame (frame, extraSize1);
+    extraSize2 = ((Integer) ast.D2.visit(this, frame1)).intValue();
+    return new Integer(extraSize1 + extraSize2);
   }
 
 
   @Override
   public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
-    return null;
+    Frame frame = (Frame) o;
+    int extraSize1;
+
+    extraSize1 = ((Integer) ast.P.visit(this, frame)).intValue();
+    return new Integer(extraSize1);
   }
 
   @Override
