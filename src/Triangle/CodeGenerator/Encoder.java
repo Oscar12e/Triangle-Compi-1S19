@@ -382,43 +382,92 @@ public final class Encoder implements Visitor {
 
   @Override
   public Object visitPrivateDeclaration(PrivateDeclaration ast, Object o) {
-    return null;
+    Frame frame = (Frame) o;
+    int extraSize1, extraSize2;
+
+    extraSize1 = ((Integer) ast.D1.visit(this, frame)).intValue();
+    Frame frame1 = new Frame (frame, extraSize1);
+    extraSize2 = ((Integer) ast.D2.visit(this, frame1)).intValue();
+    return new Integer(extraSize1 + extraSize2);
   }
 
   @Override
   public Object visitParDeclaration(ParDeclaration ast, Object o) {
-    return null;
+    Frame frame = (Frame) o;
+    int extraSize1, extraSize2;
+
+    System.out.println(ast.D1.getClass());
+    extraSize1 = ((Integer) ast.D1.visit(this, frame)).intValue();
+    Frame frame1 = new Frame (frame, extraSize1);
+    extraSize2 = ((Integer) ast.D2.visit(this, frame1)).intValue();
+    return new Integer(extraSize1 + extraSize2);
   }
 
 
   @Override
   public Object visitRecursiveDeclaration(RecursiveDeclaration ast, Object o) {
-    return null;
+    Frame frame = (Frame) o;
+    int extraSize1;
+    extraSize1 = ((Integer) ast.P.visit(this, frame)).intValue();
+    return new Integer(extraSize1);
   }
 
   @Override
   public Object visitSequentialProcFuncs(SequentialProcFuncs ast, Object o) {
-    return null;
+    return new Integer(0);
   }
 
   @Override
   public Object visitRecursiveFunc(RecursiveFunc ast, Object o) {
-    return null;
+    return new Integer(0);
   }
 
   @Override
-  public Object visitRecursiveFuncTwo(RecursiveFunc ast, Object o) {
-    return null;
+  public Object visitRecursiveFuncTwo(RecursiveFunc ast, Object o){
+    Frame frame = (Frame) o;
+    int jumpAddr = nextInstrAddr;
+    int argsSize = 0, valSize = 0;
+
+    emit(Machine.JUMPop, 0, Machine.CBr, 0);
+    ast.entity = new KnownRoutine(Machine.closureSize, frame.level, nextInstrAddr);
+    writeTableDetails(ast);
+    if (frame.level == Machine.maxRoutineLevel)
+      reporter.reportRestriction("can't nest routines more than 7 deep");
+    else {
+      Frame frame1 = new Frame(frame.level + 1, 0);
+      argsSize = ((Integer) ast.F.visit(this, frame1)).intValue();
+      Frame frame2 = new Frame(frame.level + 1, Machine.linkDataSize);
+      valSize = ((Integer) ast.E.visit(this, frame2)).intValue();
+    }
+    emit(Machine.RETURNop, valSize, 0, argsSize);
+    patch(jumpAddr, nextInstrAddr);
+    return new Integer(0);
   }
 
   @Override
   public Object visitRecursiveProc(RecursiveProc ast, Object o) {
-    return null;
+    return new Integer(0);
   }
-
   @Override
   public Object visitRecursiveProcTwo(RecursiveProc ast, Object o) {
-    return null;
+    Frame frame = (Frame) o;
+    int jumpAddr = nextInstrAddr;
+    int argsSize = 0;
+    emit(Machine.JUMPop, 0, Machine.CBr, 0);
+    ast.entity = new KnownRoutine (Machine.closureSize, frame.level,
+            nextInstrAddr);
+    writeTableDetails(ast);
+    if (frame.level == Machine.maxRoutineLevel)
+      reporter.reportRestriction("can't nest routines so deeply");
+    else {
+      Frame frame1 = new Frame(frame.level + 1, 0);
+      argsSize = ((Integer) ast.F.visit(this, frame1)).intValue();
+      Frame frame2 = new Frame(frame.level + 1, Machine.linkDataSize);
+      ast.C.visit(this, frame2);
+    }
+    emit(Machine.RETURNop, 0, 0, argsSize);
+    patch(jumpAddr, nextInstrAddr);
+    return new Integer(0);
   }
 
   @Override
@@ -821,7 +870,11 @@ public final class Encoder implements Visitor {
 
   @Override
   public Object visitSequentialProcFuncsTwo(SequentialProcFuncs ast, Object o) {
-    return null;
+    Frame frame = (Frame) o;
+    int extrasize1 = ((Integer)ast.R1.visit(this, frame)).intValue();
+    Frame frame1 = new Frame(frame, extrasize1);
+    int extraSize2 = ((Integer)ast.R2.visit(this, frame1)).intValue();
+    return new Integer(extrasize1 + extraSize2);
   }
 
   public Encoder (ErrorReporter reporter) {

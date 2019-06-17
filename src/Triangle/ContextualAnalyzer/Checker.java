@@ -139,9 +139,7 @@ public final class Checker implements Visitor {
     return null;
   }
 
-  /**
-   * Modified by: Óscar Cortés C.
-   */ @Override
+  @Override
   public Object visitDoWhileCommand(DoWhileCommand ast, Object o) {
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
     if (! eType.equals(StdEnvironment.booleanType))
@@ -150,9 +148,7 @@ public final class Checker implements Visitor {
     return null;
   }
 
-  /**
-   * Modified by: Óscar Cortés C.
-   */ @Override
+  @Override
   public Object visitUntilCommand(UntilCommand ast, Object o) {
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
     if (! eType.equals(StdEnvironment.booleanType))
@@ -161,9 +157,7 @@ public final class Checker implements Visitor {
     return null;
   }
 
-  /**
-   * Modified by: Óscar Cortés C.
-   */ @Override
+  @Override
   public Object visitDoUntilCommand(DoUntilCommand ast, Object o) {
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
     if (! eType.equals(StdEnvironment.booleanType))
@@ -172,9 +166,7 @@ public final class Checker implements Visitor {
     return null;
   }
 
-  /**
-   * Modified by: Óscar Cortés C.
-   */ @Override
+  @Override
   public Object visitForCommand(ForCommand ast, Object o) {
     TypeDenoter eType1 = (TypeDenoter) ast.E.visit(this, null);
     TypeDenoter eType2 = (TypeDenoter) ast.F.E.visit(this, null);
@@ -191,9 +183,7 @@ public final class Checker implements Visitor {
     return null;
   }
 
-  /**
-   * Modified by: Óscar Cortés C.
-   */ @Override
+  @Override
   public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
     TypeDenoter eType1 = (TypeDenoter) ast.F.E.visit(this, null);
     TypeDenoter eType2 = (TypeDenoter) ast.E1.visit(this, null);
@@ -213,9 +203,7 @@ public final class Checker implements Visitor {
     return null;
   }
 
-  /**
-   * Modified by: Óscar Cortés C.
-   */ @Override
+  @Override
   public Object visitForUntilCommand(ForUntilCommand ast, Object o) {
     TypeDenoter eType1 = (TypeDenoter) ast.F.E.visit(this, null);
     TypeDenoter eType2 = (TypeDenoter) ast.E1.visit(this, null);
@@ -236,7 +224,7 @@ public final class Checker implements Visitor {
   }
 
   /**
-   * Modified by: Óscar Cortés C.
+   * Modified by: ï¿½scar Cortï¿½s C.
    */ @Override @SuppressWarnings("unchecked")
   public Object visitChooseCommand(ChooseCommand ast, Object o) {
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
@@ -283,7 +271,7 @@ public final class Checker implements Visitor {
   // Cases
   // Returns their literals as they check their parts.
   /**
-   * Modified by: Óscar Cortés C.
+   * Modified by: ï¿½scar Cortï¿½s C.
    */ @Override @SuppressWarnings("unchecked")
   public Object visitCase(Case ast, Object o) {
     List<Terminal[]> terminals = (List<Terminal[]>) ast.CL.visit(this, o);
@@ -292,7 +280,7 @@ public final class Checker implements Visitor {
   }
 
   /**
-   * Modified by: Óscar Cortés C.
+   * Modified by: ï¿½scar Cortï¿½s C.
    */ @Override
   public Object visitElseCase(ElseCase ast, Object o) {
     idTable.openScope();
@@ -302,7 +290,7 @@ public final class Checker implements Visitor {
   }
 
   /**
-   * Modified by: Óscar Cortés C.
+   * Modified by: ï¿½scar Cortï¿½s C.
    */ @Override @SuppressWarnings("unchecked")
   public Object visitSequentialCases(SequentialCases ast, Object o) {
     List<Terminal[]> T1 = (List<Terminal[]>) ast.C1.visit(this, o);
@@ -313,7 +301,7 @@ public final class Checker implements Visitor {
   }
 
   /**
-   * Modified by: Óscar Cortés C.
+   * Modified by: ï¿½scar Cortï¿½s C.
    */ @Override @SuppressWarnings("unchecked")
   public Object visitCaseLiterals(CaseLiterals ast, Object o) {
     Object T = ast.R.visit(this, null);
@@ -336,7 +324,7 @@ public final class Checker implements Visitor {
   }
 
   /**
-   * Modified by: Óscar Cortés C.
+   * Modified by: ï¿½scar Cortï¿½s C.
    */ @Override @SuppressWarnings("unchecked")
   public Object visitSequentialCaseLiterals(SequentialCaseLiterals ast, Object o) {
     List<Terminal[]> T1 = (List<Terminal[]>) ast.L1.visit(this, o);
@@ -347,7 +335,7 @@ public final class Checker implements Visitor {
   }
 
   /**
-   * Modified by: Óscar Cortés C.
+   * Modified by: ï¿½scar Cortï¿½s C.
    */ @Override @SuppressWarnings("unchecked")
   public Object visitCaseRange(CaseRange ast, Object o) {
     Terminal T1 = (Terminal) ast.L1.visit(this, null);
@@ -586,9 +574,7 @@ public final class Checker implements Visitor {
     return null;
   }
 
-  /**
-   * Modified by: Óscar Cortés C.
-   */ @Override
+  @Override
   public Object visitForDeclaration(ForDeclaration ast, Object o) {
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
     idTable.enter(ast.I.spelling, ast);
@@ -704,9 +690,7 @@ public final class Checker implements Visitor {
     return null;
   }
 
-  /**
-   * Modified by: Óscar Cortés C.
-   */ @Override
+  @Override
   public Object visitInitializedDeclaration(InitializedDeclaration ast, Object o) {
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
     idTable.enter(ast.I.spelling, ast);
@@ -1085,7 +1069,7 @@ public final class Checker implements Visitor {
   }
 
   /**
-   * Modified by: Óscar Cortés C.
+   * Modified by: ï¿½scar Cortï¿½s C.
    */ @Override
   public Object visitSimpleVname(SimpleVname ast, Object o) {
     ast.variable = false;
