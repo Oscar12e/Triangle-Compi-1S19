@@ -150,8 +150,25 @@ public final class Encoder implements Visitor {
   }
 
   @Override
-  public Object visitForCommand(ForCommand ast, Object o) {return null;
-
+  public Object visitForCommand(ForCommand ast, Object o) {
+    Frame frame = (Frame) o;
+    int jumpAddr, loopAddr;
+    jumpAddr = nextInstrAddr;
+    ast.E.visit(this, frame);
+    ast.F.E.visit(this, frame);
+    jumpAddr = nextInstrAddr;
+    emit(Machine.JUMPop, 0, Machine.CBr, 0);
+    loopAddr = nextInstrAddr;
+    ast.C.visit(this, frame);
+    emit(Machine.CALLop, Machine.SBr, Machine.PBr, 5);
+    patch(jumpAddr, nextInstrAddr);
+    patch(jumpAddr, nextInstrAddr);
+    emit(Machine.LOADop, 1, Machine.STr, -1);
+    emit(Machine.LOADop, 1, Machine.STr, -3);
+    emit(Machine.CALLop, Machine.SBr, Machine.PBr, 14);
+    emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
+    emit(Machine.POPop, 0, 0, 2);
+    return null;
   }
 
   @Override
@@ -412,15 +429,7 @@ public final class Encoder implements Visitor {
   }
 
   @Override
-  public Object visitParDeclaration(ParDeclaration ast, Object o) {
-
-      Frame frame = (Frame) o;
-      int extraSize1, extraSize2;
-
-      extraSize1 = ((Integer) ast.D1.visit(this, frame)).intValue();
-      Frame frame1 = new Frame (frame, extraSize1);
-      extraSize2 = ((Integer) ast.D2.visit(this, frame1)).intValue();
-      return new Integer(extraSize1 + extraSize2);
+  public Object visitParDeclaration(ParDeclaration ast, Object o) {return null;
   }
 
 
