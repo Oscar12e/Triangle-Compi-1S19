@@ -150,8 +150,8 @@ public final class Encoder implements Visitor {
   }
 
   @Override
-  public Object visitForCommand(ForCommand ast, Object o) {
-    return null;
+  public Object visitForCommand(ForCommand ast, Object o) {return null;
+
   }
 
   @Override
@@ -413,7 +413,14 @@ public final class Encoder implements Visitor {
 
   @Override
   public Object visitParDeclaration(ParDeclaration ast, Object o) {
-    return null;
+
+      Frame frame = (Frame) o;
+      int extraSize1, extraSize2;
+
+      extraSize1 = ((Integer) ast.D1.visit(this, frame)).intValue();
+      Frame frame1 = new Frame (frame, extraSize1);
+      extraSize2 = ((Integer) ast.D2.visit(this, frame1)).intValue();
+      return new Integer(extraSize1 + extraSize2);
   }
 
 
