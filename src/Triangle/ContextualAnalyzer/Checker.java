@@ -693,6 +693,7 @@ public final class Checker implements Visitor {
   @Override
   public Object visitInitializedDeclaration(InitializedDeclaration ast, Object o) {
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
+    //ast.E.type = eType;//added by SS.
     idTable.enter(ast.I.spelling, ast);
     if (ast.duplicated)
       reporter.reportError ("identifier \"%\" already declared",
@@ -813,8 +814,12 @@ public final class Checker implements Visitor {
   public Object visitConstActualParameter(ConstActualParameter ast, Object o) {
     FormalParameter fp = (FormalParameter) o;
     TypeDenoter eType = (TypeDenoter) ast.E.visit(this, null);
-
-    if (! (fp instanceof ConstFormalParameter))
+    //added by SS for the third project
+    if(eType == null){
+      reporter.reportError ("const actual parameter has no type", "",
+              ast.position);
+    }
+    else if (! (fp instanceof ConstFormalParameter))
       reporter.reportError ("const actual parameter not expected here", "",
                             ast.position);
     else if (! eType.visit(this, null).equals(((ConstFormalParameter) fp).T.visit(this, null)))//modified by SS.
