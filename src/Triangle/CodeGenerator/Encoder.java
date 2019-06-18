@@ -110,22 +110,47 @@ public final class Encoder implements Visitor {
 
   @Override
   public Object visitDoWhileCommand(DoWhileCommand ast, Object o) {
+    Frame frame = (Frame) o;
+    int loopAddr;
+
+    loopAddr = nextInstrAddr;
+    ast.C.visit(this, frame);
+    ast.E.visit(this, frame);
+    emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
     return null;
   }
 
   @Override
   public Object visitUntilCommand(UntilCommand ast, Object o) {
+
+    Frame frame = (Frame) o;
+    int jumpAddr, loopAddr;
+
+    jumpAddr = nextInstrAddr;
+    emit(Machine.JUMPop, 0, Machine.CBr, 0);
+    loopAddr = nextInstrAddr;
+    ast.C.visit(this, frame);
+    patch(jumpAddr, nextInstrAddr);
+    ast.E.visit(this, frame);
+    emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
     return null;
   }
 
   @Override
   public Object visitDoUntilCommand(DoUntilCommand ast, Object o) {
+    Frame frame = (Frame) o;
+    int loopAddr;
+
+    loopAddr = nextInstrAddr;
+    ast.C.visit(this, frame);
+    ast.E.visit(this, frame);
+    emit(Machine.JUMPIFop, Machine.falseRep, Machine.CBr, loopAddr);
     return null;
   }
 
   @Override
   public Object visitForCommand(ForCommand ast, Object o) {
-    return null;
+    return new Integer(0);
   }
 
   @Override
@@ -377,7 +402,8 @@ public final class Encoder implements Visitor {
 
   @Override
   public Object visitForDeclaration(ForDeclaration ast, Object o) {
-    return null;
+
+    return new Integer(0);
   }
 
   @Override
@@ -524,6 +550,7 @@ public final class Encoder implements Visitor {
 
   @Override
   public Object visitInitializedDeclaration(InitializedDeclaration ast, Object o) {
+
     Frame frame = (Frame) o;
     int extraSize = 0;
 
@@ -532,6 +559,10 @@ public final class Encoder implements Visitor {
     emit(Machine.PUSHop, 0, 0, extraSize);
     ast.entity = new KnownAddress(Machine.addressSize, frame.level, frame.size);
     writeTableDetails(ast);
+    Integer valSize = (Integer) ast.E.visit(this, frame);
+    ObjectAddress address = ((KnownAddress) ast.entity).address;
+    emit(Machine.STOREop, valSize, displayRegister(frame.level,
+            address.level), address.displacement);
     return new Integer(extraSize);
   }
 
