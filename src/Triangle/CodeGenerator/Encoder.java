@@ -173,30 +173,64 @@ public final class Encoder implements Visitor {
   @Override
   public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
       Frame frame = (Frame) o;
-      int loopAddr, jumpComp, varForControl, extraSize1, extraSize2;
-      extraSize1 = (Integer) ast.F.visit(this, frame);// this is the variable of control
-      jumpComp = nextInstrAddr;
-      Frame frame1 = new Frame (frame, extraSize1);
-      extraSize2 = (Integer) ast.E1.visit(this, frame1);
+      int loopAddr, jumpComp, varForControl, extraSize1, extraSize2, jumpAddr;
+      extraSize1 = (Integer) ast.F.visit(this, frame);//finalization
       varForControl = nextInstrAddr;
+      Frame frame1 = new Frame(frame, extraSize1);
+      extraSize2 = (Integer) ast.E1.visit(this, frame1);
+      jumpComp = nextInstrAddr;//for cycle
       emit(Machine.JUMPop, 0, Machine.CBr, 0);
-      Frame frame2 = new Frame (frame, extraSize2 + extraSize1);
-      loopAddr = nextInstrAddr;
 
-      ast.C.visit(this, frame2);//not yet
+      //While
+      Frame frame2 = new Frame(frame1,extraSize1 + extraSize2);
+      jumpAddr = nextInstrAddr;
+      emit(Machine.JUMPop, 0, Machine.CBr, 0);
+      loopAddr = nextInstrAddr;
+      ast.C.visit(this, frame2);
+      patch(jumpAddr, nextInstrAddr);
+      ast.E2.visit(this, frame2);
+      emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);//While
+      //emit(Machine.POPop, 0, 0, extraSize2);//test
 
       emit(Machine.CALLop, varForControl, Machine.PBr, Machine.succDisplacement); // variable of control is increased
       patch(jumpComp, nextInstrAddr);
-      emit(Machine.LOADop, extraSize1 + extraSize2, Machine.STr, -2); // v_o_c is loaded
+      emit(Machine.LOADop, extraSize1 + extraSize2, Machine.STr, -2);
       emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.geDisplacement); // v_o_c is compared with the expression value
-      emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, loopAddr);
+      emit(Machine.JUMPIFop, Machine.falseRep, Machine.CBr, jumpComp);
       emit(Machine.POPop, 0, 0, extraSize1 + extraSize2); // the stack is cleaned
       return new Integer(0);//I don't like null
   }
 
   @Override
   public Object visitForUntilCommand(ForUntilCommand ast, Object o) {
-    return null;
+    Frame frame = (Frame) o;
+    int loopAddr, jumpComp, varForControl, extraSize1, extraSize2, jumpAddr;
+    extraSize1 = (Integer) ast.F.visit(this, frame);
+    varForControl = nextInstrAddr;
+    Frame frame1 = new Frame(frame, extraSize1);
+    extraSize2 = (Integer) ast.E1.visit(this, frame1);
+    jumpComp = nextInstrAddr;//for cycle
+    emit(Machine.JUMPop, 0, Machine.CBr, 0);
+
+    //Until
+    Frame frame2 = new Frame(frame1,extraSize2);
+    jumpAddr = nextInstrAddr;
+    emit(Machine.JUMPop, 0, Machine.CBr, 0);
+    loopAddr = nextInstrAddr;
+    ast.C.visit(this, frame2);
+    patch(jumpAddr, nextInstrAddr);
+    ast.E2.visit(this, frame2);
+    emit(Machine.JUMPIFop, Machine.falseRep, Machine.CBr, loopAddr);//Until
+    //emit(Machine.POPop, 0, 0, extraSize2);//test
+
+    emit(Machine.CALLop, varForControl, Machine.PBr, Machine.succDisplacement); // variable of control is increased
+    patch(jumpComp, nextInstrAddr);
+    emit(Machine.LOADop, extraSize1 + extraSize2, Machine.STr, -2);
+    emit(Machine.CALLop, Machine.SBr, Machine.PBr, Machine.geDisplacement); // v_o_c is compared with the expression value
+    emit(Machine.JUMPIFop, Machine.trueRep, Machine.CBr, jumpComp);
+    emit(Machine.POPop, 0, 0, extraSize1 + extraSize2); // the stack is cleaned
+
+    return new Integer(0);//I don't like null
   }
 
   @Override
