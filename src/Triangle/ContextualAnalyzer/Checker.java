@@ -187,17 +187,19 @@ public final class Checker implements Visitor {
   public Object visitForWhileCommand(ForWhileCommand ast, Object o) {
     TypeDenoter eType1 = (TypeDenoter) ast.F.E.visit(this, null);
     TypeDenoter eType2 = (TypeDenoter) ast.E1.visit(this, null);
-    TypeDenoter eType3 = (TypeDenoter) ast.E2.visit(this, null);
+
 
     if (! eType1.equals(StdEnvironment.integerType))
       reporter.reportError("Integer expression expected here", "", ast.F.E.position);
     if (! eType2.equals(StdEnvironment.integerType))
       reporter.reportError("Integer expression expected here", "", ast.E1.position);
-    if (! eType3.equals(StdEnvironment.booleanType))
-      reporter.reportError("Boolean expression expected here", "", ast.E2.position);
+
 
     idTable.openScope();
     ast.F.visit(this, null);
+    TypeDenoter eType3 = (TypeDenoter) ast.E2.visit(this, null);
+    if (! eType3.equals(StdEnvironment.booleanType))
+      reporter.reportError("Boolean expression expected here", "", ast.E2.position);
     ast.C.visit(this, null);
     idTable.closeScope();
     return null;
@@ -207,17 +209,18 @@ public final class Checker implements Visitor {
   public Object visitForUntilCommand(ForUntilCommand ast, Object o) {
     TypeDenoter eType1 = (TypeDenoter) ast.F.E.visit(this, null);
     TypeDenoter eType2 = (TypeDenoter) ast.E1.visit(this, null);
-    TypeDenoter eType3 = (TypeDenoter) ast.E2.visit(this, null);
+
 
     if (! eType1.equals(StdEnvironment.integerType))
       reporter.reportError("Integer expression expected here", "", ast.F.E.position);
     if (! eType2.equals(StdEnvironment.integerType))
       reporter.reportError("Integer expression expected here", "", ast.E1.position);
-    if (! eType3.equals(StdEnvironment.booleanType))
-      reporter.reportError("Boolean expression expected here", "", ast.E2.position);
 
     idTable.openScope();
     ast.F.visit(this, null);
+    TypeDenoter eType3 = (TypeDenoter) ast.E2.visit(this, null);
+    if (! eType3.equals(StdEnvironment.booleanType))
+      reporter.reportError("Boolean expression expected here", "", ast.E2.position);
     ast.C.visit(this, null);
     idTable.closeScope();
     return null;
